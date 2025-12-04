@@ -101,9 +101,6 @@ type Session struct {
 
 	// Last status returned (for debugging)
 	lastStableStatus string
-
-	// Prompt detection (for tool-specific prompts)
-	promptDetector *PromptDetector
 }
 
 // ensureStateTrackerLocked lazily allocates the tracker so callers can safely
@@ -238,11 +235,9 @@ func (s *Session) Start(command string) error {
 	// - Mouse wheel scrolling through terminal history
 	// - Text selection with mouse
 	// - Pane resizing with mouse
-	mouseCmd := exec.Command("tmux", "set-option", "-t", s.Name, "mouse", "on")
-	if err := mouseCmd.Run(); err != nil {
-		// Non-fatal: session still works, just without mouse support
-		// This can fail on very old tmux versions
-	}
+	// Non-fatal: session still works, just without mouse support
+	// This can fail on very old tmux versions
+	_ = exec.Command("tmux", "set-option", "-t", s.Name, "mouse", "on").Run()
 
 	// Send the command to the session
 	if command != "" {
@@ -740,12 +735,6 @@ func (s *Session) hasBusyIndicator(content string) bool {
 var (
 	// Matches Claude Code status line: "(45s · 1234 tokens · esc to interrupt)"
 	dynamicStatusPattern = regexp.MustCompile(`\([^)]*\d+s\s*·[^)]*tokens[^)]*\)`)
-
-	// Matches standalone time counters: "45s", "2m30s", "1h2m3s"
-	timeCounterPattern = regexp.MustCompile(`\b\d+s\b`)
-
-	// Matches token counts: "1234 tokens", "50 token"
-	tokenCountPattern = regexp.MustCompile(`\b\d+\s*tokens?\b`)
 
 	// Matches "Thinking..." or "Connecting..." with timing info
 	thinkingPattern = regexp.MustCompile(`(Thinking|Connecting)[^(]*\([^)]*\)`)

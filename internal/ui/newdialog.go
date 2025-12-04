@@ -278,7 +278,7 @@ func (d *NewDialog) View() string {
 		Padding(0, 1).
 		Margin(0, 1, 0, 0)
 
-	commandBoxSelectedStyle := commandBoxStyle.Copy().
+	commandBoxSelectedStyle := commandBoxStyle.
 		BorderForeground(lipgloss.Color("6")).
 		Bold(true)
 
@@ -379,7 +379,7 @@ func (d *NewDialog) View() string {
 		if i == d.commandCursor && d.focusIndex == 2 {
 			style = commandBoxSelectedStyle
 		} else if i == d.commandCursor {
-			style = commandBoxStyle.Copy().Bold(true)
+			style = commandBoxStyle.Bold(true)
 		}
 
 		commandBoxes = append(commandBoxes, style.Render(displayName))
