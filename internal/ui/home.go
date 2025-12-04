@@ -28,9 +28,9 @@ const (
 	// Screen clear + cursor home
 	clearScreen = "\033[2J\033[H"
 
-	// tickInterval is now a fallback for sessions without pipe-pane
-	// Primary detection is event-driven via LogWatcher
-	tickInterval = 2 * time.Second // Reduced from 500ms
+	// tickInterval for UI refresh - event-driven detection still reduces
+	// expensive operations (SignalFileActivity updates state, tick just redraws)
+	tickInterval = 500 * time.Millisecond
 )
 
 // Home is the main application model
