@@ -290,6 +290,33 @@ Data is stored in `~/.agent-deck/`:
 └── hooks/            # Hook scripts (optional)
 ```
 
+### Recommended tmux Configuration
+
+For the best experience, add these settings to your `~/.tmux.conf`:
+
+```bash
+# Enable mouse scrolling in attached sessions
+set -g mouse on
+
+# Increase scrollback buffer (AI agents produce lots of output)
+set -g history-limit 50000
+
+# Vi-style navigation in copy mode (Prefix + [ to enter, k/j to scroll)
+setw -g mode-keys vi
+```
+
+After editing, reload your config:
+```bash
+tmux source-file ~/.tmux.conf
+```
+
+**Why these settings matter:**
+| Setting | Without it |
+|---------|------------|
+| `mouse on` | Mouse wheel scrolling won't work |
+| `history-limit` | Older AI output gets truncated (default is only 2000 lines) |
+| `mode-keys vi` | No keyboard scrolling in copy mode |
+
 ### Claude Code Profile (Optional)
 
 If you use a custom Claude profile directory (e.g., dual account setup), configure it in `~/.agent-deck/config.toml`:
