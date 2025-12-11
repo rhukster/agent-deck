@@ -355,9 +355,9 @@ func (i *Instance) Fork(newTitle, newGroupPath string) (string, error) {
 		return "", fmt.Errorf("cannot fork: no active Claude session")
 	}
 
-	// Get the actual working directory from tmux (not the stored project_path)
-	// Claude uses current directory to locate session files, so we must cd there first
-	workDir := i.GetActualWorkDir()
+	// Use the PARENT's project path so fork ends up in the same Claude project directory
+	// This ensures parent and forked sessions show up together in `claude --resume`
+	workDir := i.ProjectPath
 
 	// Build the fork command with the correct Claude profile
 	// This ensures fork uses the same profile where the session ID was detected
@@ -385,9 +385,9 @@ func (i *Instance) CreateForkedInstance(newTitle, newGroupPath string) (*Instanc
 		return nil, "", err
 	}
 
-	// Create new instance with the ACTUAL working directory (not stored project_path)
-	// This ensures the forked session uses the correct path where Claude session lives
-	forked := NewInstance(newTitle, i.GetActualWorkDir())
+	// Create new instance with the PARENT's project path
+	// This ensures the forked session is in the same Claude project directory as parent
+	forked := NewInstance(newTitle, i.ProjectPath)
 	if newGroupPath != "" {
 		forked.GroupPath = newGroupPath
 	} else {
