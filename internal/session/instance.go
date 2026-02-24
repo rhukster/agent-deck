@@ -1501,7 +1501,7 @@ func (i *Instance) sendMessageWhenReady(message string) error {
 		alreadyReady := readyCount >= 10 && attempt >= 15 // At least 3s elapsed
 		if (sawActive && (status == "waiting" || status == "idle")) || alreadyReady {
 			if i.Tool == "claude" {
-				if content, captureErr := i.tmuxSession.CapturePaneFresh(); captureErr == nil && !hasCurrentComposerPrompt(content) {
+				if rawContent, captureErr := i.tmuxSession.CapturePaneFresh(); captureErr == nil && !hasCurrentComposerPrompt(tmux.StripANSI(rawContent)) {
 					// Claude can report waiting before the interactive prompt is visible.
 					// Keep polling until the prompt line is present.
 					continue
@@ -1533,7 +1533,8 @@ func (i *Instance) sendMessageWhenReady(message string) error {
 				time.Sleep(verifyDelay)
 
 				unsentPromptDetected := false
-				if content, captureErr := i.tmuxSession.CapturePaneFresh(); captureErr == nil {
+				if rawContent, captureErr := i.tmuxSession.CapturePaneFresh(); captureErr == nil {
+					content := tmux.StripANSI(rawContent)
 					unsentPromptDetected = hasUnsentPastedPrompt(content) || hasUnsentComposerPrompt(content, message)
 				}
 				verifiedStatus, statusErr := i.tmuxSession.GetStatus()
