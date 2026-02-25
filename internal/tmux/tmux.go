@@ -2864,6 +2864,7 @@ func (s *Session) WaitForShellPrompt(timeout time.Duration) bool {
 			time.Sleep(pollInterval)
 			continue
 		}
+		content = StripANSI(content)
 
 		// Get the last non-empty line
 		lines := strings.Split(strings.TrimSpace(content), "\n")
@@ -2910,6 +2911,7 @@ func (s *Session) WaitForReady(timeout time.Duration) bool {
 			time.Sleep(pollInterval)
 			continue
 		}
+		content = StripANSI(content)
 
 		busy := s.hasBusyIndicator(content)
 		prompt := hasPrompt(content)
@@ -2933,6 +2935,7 @@ func (s *Session) WaitForReady(timeout time.Duration) bool {
 
 // hasPrompt checks for input prompts (Claude, shell, other agents)
 func hasPrompt(content string) bool {
+	content = StripANSI(content)
 	lines := strings.Split(content, "\n")
 	if len(lines) == 0 {
 		return false
