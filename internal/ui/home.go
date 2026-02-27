@@ -8520,6 +8520,19 @@ func stripControlCharsPreserveANSI(s string) string {
 	}, s)
 }
 
+// stripControlCharsPreserveANSI removes dangerous C0 control characters while
+// preserving ANSI escape sequences (ESC = 0x1b). This allows terminal colors
+// and formatting from capture-pane -e output to pass through to display, while
+// still stripping \r, \b, and other control chars that corrupt TUI layout.
+func stripControlCharsPreserveANSI(s string) string {
+	return strings.Map(func(r rune) rune {
+		if r < 0x20 && r != '\n' && r != '\t' && r != '\x1b' {
+			return -1 // Drop the character
+		}
+		return r
+	}, s)
+}
+
 // truncatePath shortens a path to fit within maxLen display width
 func truncatePath(path string, maxLen int) string {
 	pathWidth := runewidth.StringWidth(path)
